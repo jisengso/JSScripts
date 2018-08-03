@@ -1,0 +1,102 @@
+These Python scripts were written by Jiseng So. They are provided for use in however you see fit, but also come as-is. I take no responsibility for any damage you may cause them or from them. It's good practice to take a look at what you're running before you run them anyhow!
+
+I've got a YouTube page!
+https://www.youtube.com/user/JisengSo
+
+Good luck trying to use my scripts... I can't say I've made them very user-friendly. If there's demand for that sort of thing, I might do that.
+
+
+bmpHandler.py
+	Decodes and encodes BMPs. Only handles 24-bit without colorspace information. Used by stringMaker
+
+capImage.py
+	Takes screenshots with PIL approximately every second. Also can use the Windows API, but this method is very slow. Saves in PNG.
+
+cheeseImgDater.py
+	Incomplete script that's supposed to place text over my cheese images, dependent on the date in the EXIF data.
+
+cheeseSummary.py
+	Aggregates my cheese charts and creates a statistical overview.
+
+composite.sh
+	Uses ImageMagick to paste the logo and song names into the main images.
+	
+Debug.py
+	Just displays debug messages.
+
+ipSwitcher.py
+	Outputs commands to change IP addresses within specified ranges periodically. Can result in a chaotic network if deployed en masse. Requires 'ifconfig' and 'route'.
+	
+Joiner.py
+	Takes all .wav files in filename order in the current directory, except the one with the output name, and combines them if possible.
+
+mp3Extract.py
+	Extracts MP3's based on the magic number. It's very naive and may make files larger than they should be.
+
+pdfToPng.py
+	Converts PDFs to series of PNG images. Outputs very large PNGs with two pages per image.
+	
+randImgMapper.py
+	Makes symlinks random images in a specified directory for a specified number of frames.
+
+SilenceInserter.py
+	Applies symlinks linking a moment of silence in ascending numerical order. This is meant to put silence between every track. Used in conjunction with Joiner.py
+
+stringMaker.py
+	Takes fontmap.bmp, a list of the characters contained within the font map from left to right, top to bottom, and a list of phrases, outputting them to one large image, ready to be copasted somewhere else.
+
+stringWordsToImages.py
+	Converts each word in a sentence into its own image. Words can be grouped together with the underscore.
+
+Targets.py
+	Uses timing arrays to lay out frames with symlinks. Used in conjunction with the mf feature of MEncoder.
+
+TargetsAdvanced.py
+	Can lay out frames with specified directories. More complex and flexible than Targets.py.
+
+timeIndexToList.py
+	Converts time indexes into timing arrays to be used in Targets.py.
+
+vpnRandomizer.py
+	Randomizes the selected VPN connection. Takes a list of files "selectionList.txt" and makes a symlink to one of those files in "selectedVPN.conf". Meant to be used with an autostarting OpenVPN service.
+	
+WavIndexer.py
+	Takes all wavs in filename order and puts out a time index and timing array.
+
+Changelog:
+
+2018-01-17
+	Created ipSwitcher.py.
+
+2017-12-17
+	Created vpnRandomizer.py.
+
+2017-08-05
+	stringMaker.py now outputs separate files for each phrase.
+	bmpHandler.py now refuses to write empty files.
+	Created composite.sh, which pastes logos and song names into images.
+
+2017-07-23
+	Created pdfToPng.py, which converts PDFs to a series of PNG images.
+	capImage.py can now use the Windows API to detect which window has focus and take screenshots of only that window. This feature is extremely slow, however.
+
+2017-06-25
+	Added hash-based deduplication to capImage.py. Can now deduplicate across the entire session. Should be more memory efficient, too!
+
+2016-10-06
+	Added a basic screen capture script: capImage.py
+	Added improved version of Targets.py: TargetsAdvanced.py
+
+2015-09-05
+	Added basic descriptions of the scripts.
+
+2015-04-12
+	Removed virtual currency addresses.
+	Created randImgMapper, stringWordsToImages, timeIndexToList, mp3Extract.
+
+2014-01-20
+	stringMaker has an allCaps boolean.
+	Joiner can write RF64 files which are valid in Windows.
+
+2013-12-19
+	Dogecoin address.
