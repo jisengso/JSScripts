@@ -14,6 +14,27 @@ monthStr = str(monthNum)
 if monthNum < 10:
     monthStr = "".join(["0", monthStr])
 
+nextMonth = monthNum+1
+lastMonth = monthNum-1
+addYear = 0
+subYear = 0
+
+
+if nextMonth == 13:
+    nextMonth = 1
+    addYear = 1
+nextMonthName = calendar.month_name[nextMonth]
+nextMonthStr = str(nextMonth)
+if nextMonth < 10:
+    nextMonthStr = "".join(["0", nextMonthStr])
+if lastMonth == 0:
+    lastMonth = 12
+    subYear = -1
+lastMonthName = calendar.month_name[lastMonth]
+lastMonthStr = str(lastMonth)
+if lastMonth < 10:
+    lastMonthStr = "".join(["0", lastMonthStr])
+
 calendarList = calendar.monthcalendar(yearNum, monthNum)
 outputList = ["{| class=\"wikitable floatright\"",
               "".join(["|+", calendar.month_name[monthNum]]),
@@ -33,6 +54,9 @@ for week in calendarList:
             dayStr = "".join(["0", dayStr])
         outputList.append("".join(["| [[", yearStr, monthStr, dayStr, " | ", dayStr, "]]"]))
 
+outputList.append("|-")
+outputList.append("".join(["| colspan=3 | [[", str(yearNum+subYear), lastMonthStr, "01 | ", lastMonthName, "]]"]))
+outputList.append("".join(["| colspan=4 style=\"text-align:right;\"| [[", str(yearNum+addYear), nextMonthStr, "01 | ", nextMonthName, "]]"]))
 outputList.append("|}")
 
 for line in outputList:
