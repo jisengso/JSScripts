@@ -37,7 +37,7 @@ if lastMonth < 10:
 
 calendarList = calendar.monthcalendar(yearNum, monthNum)
 outputList = ["{| class=\"wikitable floatright\"",
-              "".join(["|+", calendar.month_name[monthNum]]),
+              "".join(["|+", calendar.month_name[monthNum], " [[:category:", yearStr, " | ", yearStr, "]]"]),
               "|-"]
 
 for weekday in calendar.weekheader(3).split(" "):
@@ -55,8 +55,8 @@ for week in calendarList:
         outputList.append("".join(["| [[", yearStr, monthStr, dayStr, " | ", dayStr, "]]"]))
 
 outputList.append("|-")
-outputList.append("".join(["| colspan=3 | [[", str(yearNum+subYear), lastMonthStr, "01 | ", lastMonthName, "]]"]))
-outputList.append("".join(["| colspan=4 style=\"text-align:right;\"| [[", str(yearNum+addYear), nextMonthStr, "01 | ", nextMonthName, "]]"]))
+outputList.append("".join(["| colspan=3 | [[:category:", str(yearNum+subYear), lastMonthStr, " | ", lastMonthName, "]]"]))
+outputList.append("".join(["| colspan=4 style=\"text-align:right;\"| [[:category:", str(yearNum+addYear), nextMonthStr, " | ", nextMonthName, "]]"]))
 outputList.append("|}")
 
 for line in outputList:
