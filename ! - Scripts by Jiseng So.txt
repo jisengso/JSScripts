@@ -67,7 +67,19 @@ videos/timeIndexToList.py
 videos/WavIndexer.py
 	Takes all wavs in filename order and puts out a time index and timing array.
 
+wiki/WikiCalendar.py
+    Makes a wikitext calendar with a given year and month.
+	
 Changelog:
+
+2018-09-21
+    WikiCalendar.py makes the month name link to its corresponding category.
+
+2018-09-18
+    WikiCalendar.py now links to month and year categories.
+
+2018-09-16
+    Create WikiCalendar.py.
 
 2018-08-03
     Add impregnate.lua
