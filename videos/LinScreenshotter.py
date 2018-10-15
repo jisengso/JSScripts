@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import shlex
 import time
@@ -13,15 +14,25 @@ class LinScreenshotter:
         self.digits = 10
         self.prefix = windowName
         self.fileSuffix = ".png"
+        curDate = time.localtime()
+        self.dateStr = "".join([str(curDate.tm_year), str(curDate.tm_mon), str(curDate.tm_mday), str(curDate.tm_min), str(curDate.tm_min), str(curDate.tm_sec)])
+        self.dirName = "-".join([self.prefix, self.dateStr])
         self.windowIDCommand = "xwininfo -root -tree | grep {}".format(windowName)
         self.windowID = ""
         self.screenshotCommand = "import -window {} {}"
         self.interval = 1
         self.exitNext = False
+        self.compressMore = True
         self.compressCommand = "pngout {}"
+        self.deduplicate = True
         self.hashCommand = "shasum {}"
         self.hashes = set()
-        signal.signal(signal.SIGINT, self.setExit)
+
+    def initDir(self):
+        cmd = "mkdir {}".format(self.dirName)
+        process = Popen(cmd, shell=True)
+        exitCode = process.wait()
+
 
     def setExit(self, bleh, blah):
         self.exitNext = True
@@ -40,29 +51,36 @@ class LinScreenshotter:
 
     def getScreenshot(self):
         while True:
-            shotFilename = "".join([self.prefix, str(self.imageCount).zfill(self.digits), self.fileSuffix])
+            shotFilename = os.path.join(self.dirName, "".join([self.prefix, str(self.imageCount).zfill(self.digits), self.fileSuffix]))
             cmd = self.screenshotCommand.format(self.windowID, shotFilename)
             process = Popen(cmd, shell=True)
             exitCode = process.wait()
-            compressCmd = self.compressCommand.format(shotFilename)
-            process = Popen(compressCmd, shell=True)
-            process.wait()
-            hashCmd = self.hashCommand.format(shotFilename)
-            process = Popen(hashCmd, stdout=PIPE, shell=True)
-            newHash = process.communicate()[0].split()[0]
-            process.wait()
-            print(newHash)
-            if newHash not in self.hashes:
-                self.imageCount += 1
-                self.hashes.add(newHash)
-            if exitCode != 0:
-                return exitCode
-            elif self.exitNext:
+            if not exitCode:
+                doCompress = False
+                if self.deduplicate:
+                    hashCmd = self.hashCommand.format(shotFilename)
+                    process = Popen(hashCmd, stdout=PIPE, shell=True)
+                    newHash = process.communicate()[0].split()[0]
+                    exitCode = process.wait()
+                    print(newHash)
+                    if not exitCode and newHash not in self.hashes:
+                        self.imageCount += 1
+                        self.hashes.add(newHash)
+                        doCompress = True
+                else:
+                    self.imageCount += 1
+                    doCompress = True
+                if self.compressMore and doCompress:
+                    compressCmd = self.compressCommand.format(shotFilename)
+                    process = Popen(compressCmd, shell=True)
+                    exitCode = process.wait()
+            if self.exitNext:
                 exit()
             else:
                 time.sleep(self.interval)
 
     def run(self):
+        self.initDir()
         while True:
             try:
                 self.getID()
@@ -74,4 +92,5 @@ class LinScreenshotter:
 
 if __name__ == "__main__":
     capturer = LinScreenshotter(sys.argv[1])
+    signal.signal(signal.SIGINT, capturer.setExit)
     capturer.run()
