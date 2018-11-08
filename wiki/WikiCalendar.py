@@ -6,11 +6,15 @@
 
 import calendar
 import sys
+import holidays
 
+USHolidays = holidays.US()
 yearNum = int(sys.argv[1])
 yearStr = str(yearNum)
 monthNum = int(sys.argv[2])
 monthStr = str(monthNum)
+holidayList = []
+
 if monthNum < 10:
     monthStr = "".join(["0", monthStr])
 
@@ -46,17 +50,28 @@ for weekday in calendar.weekheader(3).split(" "):
 for week in calendarList:
     outputList.append("|-")
     for day in week:
-        dayStr = str(day)
         if day == 0:
             outputList.append("|")
             continue
+        dayStr = str(day)
         if day < 10:
             dayStr = "".join(["0", dayStr])
-        outputList.append("".join(["| [[", yearStr, monthStr, dayStr, " | ", dayStr, "]]"]))
+        classStr = ""
+        weekday = calendar.weekday(yearNum, monthNum, day)
+        dateStr = "".join([yearStr, monthStr, dayStr])
+        if dateStr in USHolidays:
+            classStr = "class=\"holiday\""
+            holidayList.append("".join(["* [[", dateStr ,"|",dayStr, "]]: ", USHolidays.get(dateStr)]))
+        elif weekday in (calendar.SATURDAY, calendar.SUNDAY):
+            classStr = "class=\"weekend\""
+        outputList.append("".join(["| ", classStr, " [[", dateStr, " | ", dayStr, "]]"]))
 
 outputList.append("|-")
 outputList.append("".join(["| colspan=3 | [[:category:", str(yearNum+subYear), lastMonthStr, " | ", lastMonthName, "]]"]))
 outputList.append("".join(["| colspan=4 style=\"text-align:right;\"| [[:category:", str(yearNum+addYear), nextMonthStr, " | ", nextMonthName, "]]"]))
+if holidayList:
+    outputList.append("| colspan=7 | '''Holidays''':")
+    outputList.append("\n".join(holidayList))
 outputList.append("|}")
 
 for line in outputList:
