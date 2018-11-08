@@ -64,12 +64,13 @@ for week in calendarList:
             holidayList.append("".join(["* [[", dateStr ,"|",dayStr, "]]: ", USHolidays.get(dateStr)]))
         elif weekday in (calendar.SATURDAY, calendar.SUNDAY):
             classStr = "class=\"weekend\""
-        outputList.append("".join(["| ", classStr, " [[", dateStr, " | ", dayStr, "]]"]))
+        outputList.append("".join(["| ", classStr, " | [[", dateStr, " | ", dayStr, "]]"]))
 
 outputList.append("|-")
 outputList.append("".join(["| colspan=3 | [[:category:", str(yearNum+subYear), lastMonthStr, " | ", lastMonthName, "]]"]))
 outputList.append("".join(["| colspan=4 style=\"text-align:right;\"| [[:category:", str(yearNum+addYear), nextMonthStr, " | ", nextMonthName, "]]"]))
 if holidayList:
+    outputList.append("|-")
     outputList.append("| colspan=7 | '''Holidays''':")
     outputList.append("\n".join(holidayList))
 outputList.append("|}")
