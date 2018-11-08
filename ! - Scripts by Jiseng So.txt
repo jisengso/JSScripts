@@ -37,6 +37,9 @@ videos/composite.sh
 videos/Joiner.py
 	Takes all .wav files in filename order in the current directory, except the one with the output name, and combines them if possible.
 
+videos/LinScreenShotter.py
+    Takes periodic screenshots of Linux windows containing the specified word.
+
 videos/mp3Extract.py
 	Extracts MP3's based on the magic number. It's very naive and may make files larger than they should be.
 
@@ -71,6 +74,12 @@ wiki/WikiCalendar.py
     Makes a wikitext calendar with a given year and month.
 	
 Changelog:
+
+2018-11-08
+    WikiCalendar.py now marks weekends and holidays.
+
+2018-10-14
+    LinScreenShotter.py added.
 
 2018-09-21
     WikiCalendar.py makes the month name link to its corresponding category.
