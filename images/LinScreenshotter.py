@@ -23,21 +23,22 @@ class LinScreenshotter:
         self.prefix = windowName
         self.fileSuffix = ".png"
         curDate = time.localtime()
-        self.dateStr = "".join([str(curDate.tm_year), str(curDate.tm_mon), str(curDate.tm_mday), str(curDate.tm_min), str(curDate.tm_min), str(curDate.tm_sec)])
-        self.dirName = "-".join([self.prefix, self.dateStr])
-        self.windowIDCommand = "xwininfo -root -tree | grep {}".format(windowName)
+        self.dateStr = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
+        self.dirName = f"{self.prefix}-{self.dateStr}"
+        self.windowIDCommand = f"xwininfo -root -tree | grep {windowName}"
         self.windowID = ""
         self.screenshotCommand = "import -window {} {}"
         self.interval = 1
         self.exitNext = False
-        self.shouldCompressMore = True
-        self.shouldCompressNext = True
+        self.shouldCompressMore = False
+        self.shouldCompressNext = False
         self.compressProcessesMax = 6
         self.compressPool = Pool(processes=self.compressProcessesMax)
         self.compressCommand = "pngout {}"
         self.shouldDeduplicate = True
         self.hashCommand = "shasum {}"
         self.hashes = set()
+        self.exitPressed = 0
 
     def initDir(self):
         self.debug("initDir")
@@ -48,8 +49,12 @@ class LinScreenshotter:
     def setExit(self, bleh, blah):
         self.debug("setExit")
         self.exitNext = True
+        signal.signal(signal.SIGINT, self.setExit) # In case CTRL-C is pressed again.
+        if (self.exitPressed > 5):
+            exit()
         self.compressPool.close()
         self.compressPool.join()
+
 
     def getID(self):
         self.debug("getID")

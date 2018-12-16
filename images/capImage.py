@@ -6,7 +6,6 @@ import stat
 import signal
 import sys
 import struct
-import win32gui, win32ui, win32con, win32api
 try:
 	from cStringIO import StringIO
 except:
@@ -48,7 +47,6 @@ counter = 0
 captureDir = ""
 
 # captureMethod 0: PIL capturing main screen
-# captureMethod 1: win32api
 captureMethod = 0
 
 windowName = "Fallout3"
@@ -77,52 +75,6 @@ def signal_handler(signalNum, frame):
 	print (time.ctime() + ": Termination signal received: " + signalNum.__str__() + ", " + frame.__str__())
 	global exitNext
 	exitNext = 200
-def win32apiImageGrab():
-	hwin = -404
-	if followFocus:
-		hwin = win32gui.GetForegroundWindow()
-	else:
-		hwin = win32gui.FindWindow(None, windowName)
-	print time.ctime() + ": " + win32gui.GetWindowText(win32gui.GetForegroundWindow())
-#	winPlacement = win32gui.GetWindowPlacement(hwin)
-#	left = winPlacement[4][0]
-#	top = winPlacement[4][1]
-	
-	left, top, right, bottom = win32gui.GetWindowRect(hwin)
-#	width = right - left
-#	height = top - bottom
-	junk1, junk2, width, height = win32gui.GetClientRect(hwin)
-	
-#	print left, top, right, bottom
-	
-	hwindc = win32gui.GetWindowDC(hwin)
-	srcdc = win32ui.CreateDCFromHandle(hwindc)
-	memdc = srcdc.CreateCompatibleDC()
-	bmp = win32ui.CreateBitmap()
-	bmp.CreateCompatibleBitmap(srcdc, width, height)
-	memdc.SelectObject(bmp)
-	memdc.BitBlt((0, 0), (width, height), srcdc, (0, 0), win32con.SRCCOPY)
-	bmpTuple = bmp.GetBitmapBits()
-	srcdc.DeleteDC()
-	memdc.DeleteDC()
-	win32gui.ReleaseDC(hwin, hwindc)
-	win32gui.DeleteObject(bmp.GetHandle())
-
-	bmpBytes = StringIO()
-
-	count = 0
-	tmpList = []
-	for i in bmpTuple:
-		if count % 4 == 3:
-			bmpBytes.write(struct.pack("bbbB", tmpList[0], tmpList[1], tmpList[2], 255))
-			tmpList = []
-		else:
-			tmpList.insert(0, i)
-		count+=1
-
-	curImage = Image.frombytes("RGBA", (width, height), bmpBytes.getvalue())
-	
-	return curImage
 	
 signal.signal(signal.SIGINT, signal_handler)
 	
@@ -146,11 +98,9 @@ while exitNext == -404:
 	try:
 		if captureMethod == 0:
 			curImage = ImageGrab.grab()
-		elif captureMethod == 1:
-			curImage = win32apiImageGrab()
 		curImageHash = hash(curImage.tobytes())
 	except:
-		print time.ctime() + ": Image capture fail: ", sys.exc_info()[0]
+		print (time.ctime() + ": Image capture fail: ", sys.exc_info()[0])
 		curImage = -404
 		curImageHash = -404
 	
