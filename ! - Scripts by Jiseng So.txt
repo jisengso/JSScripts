@@ -78,6 +78,11 @@ wiki/WikiCalendar.py
 
 Changelog:
 
+2018-12-16
+	Compressor.py added.
+	Removed Windows API functionality from capImage.py. The third-party library providing the functionality is not available for current Python version.
+	LinScreenShotter.py no longer compresses by default.
+
 2018-11-08
     WikiCalendar.py now marks weekends and holidays.
 
