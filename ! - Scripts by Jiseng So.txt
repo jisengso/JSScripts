@@ -12,7 +12,16 @@ Debug.py
 
 dfhack/impregnate.lua
     Makes non-egg-layers pregnant. Requires dfhack.
-	
+
+images/capImage.py
+	Takes screenshots with PIL approximately every second. Saves in PNG.
+
+images/Compressor.py
+	Uses pngout to compress png's within a directory in parallel.
+
+images/LinScreenShotter.py
+    Takes periodic screenshots of Linux windows containing the specified word. Might get wrong window if multiple names of windows contain the word.
+
 network/ipSwitcher.py
 	Outputs commands to change IP addresses within specified ranges periodically. Can result in a chaotic network if deployed en masse. Requires 'ifconfig' and 'route'.
 
@@ -21,9 +30,6 @@ network/vpnRandomizer.py
 
 videos/bmpHandler.py
 	Decodes and encodes BMPs. Only handles 24-bit without colorspace information. Used by stringMaker
-
-videos/capImage.py
-	Takes screenshots with PIL approximately every second. Also can use the Windows API, but this method is very slow. Saves in PNG.
 
 videos/cheeseImgDater.py
 	Incomplete script that's supposed to place text over my cheese images, dependent on the date in the EXIF data.
@@ -37,15 +43,12 @@ videos/composite.sh
 videos/Joiner.py
 	Takes all .wav files in filename order in the current directory, except the one with the output name, and combines them if possible.
 
-videos/LinScreenShotter.py
-    Takes periodic screenshots of Linux windows containing the specified word.
-
 videos/mp3Extract.py
 	Extracts MP3's based on the magic number. It's very naive and may make files larger than they should be.
 
 videos/pdfToPng.py
 	Converts PDFs to series of PNG images. Outputs very large PNGs with two pages per image.
-	
+
 videos/randImgMapper.py
 	Makes symlinks random images in a specified directory for a specified number of frames.
 
@@ -66,14 +69,19 @@ videos/TargetsAdvanced.py
 
 videos/timeIndexToList.py
 	Converts time indexes into timing arrays to be used in Targets.py.
-	
+
 videos/WavIndexer.py
 	Takes all wavs in filename order and puts out a time index and timing array.
 
 wiki/WikiCalendar.py
     Makes a wikitext calendar with a given year and month.
-	
+
 Changelog:
+
+2018-12-16
+	Compressor.py added.
+	Removed Windows API functionality from capImage.py. The third-party library providing the functionality is not available for current Python version.
+	LinScreenShotter.py no longer compresses by default.
 
 2018-11-08
     WikiCalendar.py now marks weekends and holidays.
