@@ -13,6 +13,10 @@ Debug.py
 dfhack/impregnate.lua
     Makes non-egg layers pregnant. Requires dfhack.
 
+ElseHeartBreak/GetElseHeartBreakCode.py
+    Exports code marked with "ExportMark" from Else Heart.Break() saved games
+    into .sprak files per device.
+
 images/capImage.py
 	Takes screenshots with PIL approximately every second. Saves in PNG.
 
@@ -81,6 +85,7 @@ Changelog:
 2019-01-04
     Allow capImage.py to accept argument to name the directory. It also puts
     the date and time into the directory name.
+    Add GetElseHeartBreakCode.py and my exported code.
 
 2018-12-16
 	Compressor.py added.
