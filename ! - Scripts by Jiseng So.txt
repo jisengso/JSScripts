@@ -11,7 +11,7 @@ Debug.py
 	Just displays debug messages.
 
 dfhack/impregnate.lua
-    Makes non-egg-layers pregnant. Requires dfhack.
+    Makes non-egg layers pregnant. Requires dfhack.
 
 images/capImage.py
 	Takes screenshots with PIL approximately every second. Saves in PNG.
@@ -77,6 +77,10 @@ wiki/WikiCalendar.py
     Makes a wikitext calendar with a given year and month.
 
 Changelog:
+
+2019-01-04
+    Allow capImage.py to accept argument to name the directory. It also puts
+    the date and time into the directory name.
 
 2018-12-16
 	Compressor.py added.
