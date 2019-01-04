@@ -1,0 +1,8 @@
+#ExportMark
+# Lists devices in Computer1 memory.
+
+var MC = Connect("Computer1")
+string name = Name()
+loop MC.ls()
+    Print(@)
+end

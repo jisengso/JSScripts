@@ -1,0 +1,247 @@
+# ExportMark
+
+
+void more(array printLines)
+    number counter = 1
+    number numEntries = 5
+    loop printLines
+        Print(@)
+        if Mod(counter, numEntries) == 0
+            Input("MORE...")
+        end
+        counter += 1
+    end
+end
+
+var connFinder()
+    var result = Connect("PoliceOfficeInterior_MinistryOfficeWorkstationComputer_1")
+    return result
+end
+
+var connPather()
+    var result = Connect("Lodge_Room2_LargeComputerL4_TheLodge_ComputerTerminal_LargeComputerL3_1")
+    # Has functions:
+    # FindPath
+    return result
+end
+
+string rm(string device)
+   # Remove an interesting device
+    string response = "Cannot find " + device
+    string entry = "device_" + device
+    if HasMemory(entry)
+        EraseMemory(entry)
+        response = "Removed " + device
+    end
+    return response
+end
+
+array find(string term)
+    # Among stored devices, which contain the term?
+    array memArray = GetMemories()
+    array resultArray = []
+    loop memArray
+        if isStrInStr(term, @) 
+            if isStrInStr("device_", @)
+                Append(resultArray, @)
+            end 
+        end
+    end
+    return resultArray
+end
+
+array ls()
+    # List all interesting devices.
+    DisconnectAll()
+    array memArray = GetMemories()
+    array resultArray = []
+    loop memArray
+        if isStrInStr("device_", @)
+            var mem = LoadMemory(@)
+            Connect(mem)
+            Append(resultArray, mem)
+        end
+    end
+    return resultArray
+end
+
+string reg(string device)
+    # For registering interesting devices
+    DisconnectAll()
+    Print("reg " + device)
+    string devEntry = 'device_' + device
+    string response = 'Error'
+    bool alreadyHave = false
+    if HasMemory(devEntry)
+        alreadyHave = true
+        response = 'Already have ' + device
+    end
+    if !alreadyHave
+        if Connect(device) != -1
+            response = 'Added ' + device
+            save(devEntry, device)
+        else 
+            response = 'Cannot connect to ' + device
+        end            
+    end
+    Print(response)
+    return response
+end
+
+array dir()
+    # List functions
+    array list = []
+    Append(list, "bool isStrInStr(string needle, string haystack)")
+    Append(list, "void inform(string msg)")
+    Append(list, "void broadcast(string msg)")
+    Append(list, "array slurpMenu1()")
+    Append(list, "array slurpMenu2()")
+    Append(list, "void save(string key, var value)")
+    Append(list, "var load(string key)")
+    Append(list, "array getMem()")
+    Append(list, "void doSlurp()")
+    Append(list, "array menu()")
+    Append(list, "void main()")
+    Append(list, "array find(string term)")
+    Append(list, "array ls()")
+    Append(list, "string reg(string device)")
+    return list
+end
+
+bool isStrInStr(string needle, string haystack)
+    bool result = false
+    number nLen = Count(needle)
+    number hLen = Count(haystack)
+#    Print("Needle: " + needle)
+#    Print("Haystack: " + haystack)
+    loop hPos in Range(0, hLen - 1)
+       loop nPos in Range(0, nLen - 1)
+           if hPos + nPos > hLen - 1
+               break
+           else if haystack[hPos+nPos] != needle[nPos]
+               break 
+           else if nPos == nLen - 1
+               result = true
+           end 
+       end 
+       if result == true
+           break
+       end
+    end 
+#    Print(result)
+    return result
+end
+
+void inform(string msg)
+    var CC = Connect("SebastianCreditCard")
+    CC.inform(msg) 
+end
+
+void broadcast(string msg)
+    DisconnectAll()
+    var conn = Connect("PoliceOfficeInterior_MinistryOfficeWorkstationComputer_1")
+    conn.broadcast(msg)
+end
+
+array slurpMenu1()
+    array text = []
+    DisconnectAll()
+    Append(text, "PoliceOfficeInterior_MinistryOfficeWorkstationComputer_1")
+    Append(text, "Computer2")
+    Append(text, "SodaStorage_ComputerWithConsoleOutput_1")
+    Append(text, "Hotel_Lobby_Point")
+    Append(text, "Cafe_Room1_Point")
+    Append(text, "DorisGardens_West_Trigger_1")
+    Append(text, "Plaza_Point")
+    loop text
+        Connect(@)
+    end
+    return text
+end
+
+array slurpMenu2()
+    array text = []
+    DisconnectAll()
+    Append(text, "Mines_Entry_Trigger_1")
+    Append(text, "BarYvonne_Point1")
+    Append(text, "Mines_ClubDot_Point")
+    Append(text, "SodaStorage_Point")
+    Append(text, "Ministry_Lobby_Point1")
+    Append(text, "ShoeStore_Point")
+    Append(text, "HarborEast_Point")
+    loop text
+        Connect(@)
+    end
+    return text   
+end
+
+void save(string key, var value)
+   SaveMemory(key, value)
+   return
+end
+
+var load(string key)
+   var mem = "None"
+   if HasMemory(key)
+       mem = LoadMemory(key)
+   else
+       mem = "Memory doesn't exist."
+   end
+   return mem
+end
+
+array getMem()
+   return GetMemories() 
+end
+
+void doSlurp()
+   Slurp() 
+end
+
+array menu()
+    array options = []
+    Append(options, "Connected to So's Hub!")
+    Append(options, "1. Prep slurp 1")
+    Append(options, "2. Prep slurp 2")
+    Append(options, "3. View memory")
+    Append(options, "4. Interesting devices")
+    Append(options, "5. Slurp")
+    return options
+end
+
+void main()
+   array options = menu()
+   Print("")
+   Input("ENTER to start")
+   
+   loop
+       Print("")
+       loop options
+           Print(@)
+       end
+       Print("")
+       string choice = Input("Your choice: ")
+       Print("")
+       if choice == "1"
+           Print("Destinations:")
+           more(slurpMenu1())           
+       else if choice == "2" 
+           Print("Destinations:")
+           more(slurpMenu2())
+       else if choice == "3"
+           Print("Memories:")
+           more(getMem())
+       else if choice == "4"
+           Print("Devices:")
+           more(ls())
+       else if choice == "5"
+           doSlurp()
+       else
+           Print("Invalid choice.")
+       end
+       Print("")
+       Input("ENTER to continue")
+   end
+end
+
+main(
