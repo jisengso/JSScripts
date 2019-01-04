@@ -49,9 +49,14 @@ captureDir = ""
 # captureMethod 0: PIL capturing main screen
 captureMethod = 0
 
-windowName = "Fallout3"
-followFocus = True
 
+filePrefix = "capture"
+if len(sys.argv) > 1:
+	filePrefix = sys.argv[1]
+
+curDate = time.localtime()
+dateStr = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
+dirName = f"{filePrefix}-{dateStr}"
 
 # dedupMethod 0: Consecutive deduplication. Does not save consecutive exact same images.
 # dedupMethod 1: Consecutive N deduplication. Does not save if duplicated within the last N screenshots. N = dedupLastNum
@@ -75,9 +80,9 @@ def signal_handler(signalNum, frame):
 	print (time.ctime() + ": Termination signal received: " + signalNum.__str__() + ", " + frame.__str__())
 	global exitNext
 	exitNext = 200
-	
+
 signal.signal(signal.SIGINT, signal_handler)
-	
+
 if 1:
 	dirList = []
 	tmpList = os.listdir(".")
@@ -85,9 +90,9 @@ if 1:
 		if stat.S_ISDIR(os.stat(i).st_mode):
 			dirList.append(i)
 	dirCount = dirList.__len__()
-	captureDir = "capture%03d"%(dirCount + 1) + "/"
+	captureDir = dirName
 	os.mkdir(captureDir + "/")
-	
+
 while exitNext == -404:
 
 	try:
@@ -103,39 +108,41 @@ while exitNext == -404:
 		print (time.ctime() + ": Image capture fail: ", sys.exc_info()[0])
 		curImage = -404
 		curImageHash = -404
-	
+
+	filename = os.path.join(captureDir, f"{filePrefix}_{counter:010}.png")
+
 	if curImage == -404:
 		pass
-		
+
 	elif dedupMethod==0:
 		if curImageHash != prevImageHash:
-			print (time.ctime() + ": Saving " + captureDir + "screen_capture%06d.png"%counter)
-			curImage.save(captureDir + "screen_capture%06d.png"%counter, "PNG")
+			print (time.ctime() + ": Saving " + filename)
+			curImage.save(filename, "PNG")
 			counter += 1
 			prevImageHash = curImageHash
 		else: dupImage()
-		
+
 	elif dedupMethod==1:
 		if not hashCache.__contains__(curImageHash):
 			hashCache.append(curImageHash)
-			print (time.ctime() + ": Saving " + captureDir + "screen_capture%06d.png"%counter)
-			curImage.save(captureDir + "screen_capture%06d.png"%counter, "PNG")
+			print (time.ctime() + ": Saving " + filename)
+			curImage.save(filename, "PNG")
 			counter += 1
 			if hashCache.__len__() > dedupLastNum:
 				hashCache.remove(0)
 		else: dupImage()
-		
+
 	elif dedupMethod==2:
 		if not hashCache.__contains__(curImageHash):
 			hashCache.append(curImageHash)
-			print (time.ctime() + ": Saving " + captureDir + "screen_capture%06d.png"%counter)
-			curImage.save(captureDir + "screen_capture%06d.png"%counter, "PNG")
+			print (time.ctime() + ": Saving " + filename)
+			curImage.save(filename, "PNG")
 			counter += 1
 		else: dupImage()
 	else:
 		print("Invalid deduplication method. ")
 		break
-		
+
 
 print (time.ctime() + ": Exiting.")
 sys.exit(0)

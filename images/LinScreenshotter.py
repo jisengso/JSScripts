@@ -49,6 +49,7 @@ class LinScreenshotter:
     def setExit(self, bleh, blah):
         self.debug("setExit")
         self.exitNext = True
+        self.exitPressed += 1
         signal.signal(signal.SIGINT, self.setExit) # In case CTRL-C is pressed again.
         if (self.exitPressed > 5):
             exit()
