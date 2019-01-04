@@ -1,0 +1,97 @@
+# MissingPersonFinder
+# ExportMark
+
+#array lampposts = GetThingsOfType("lamp")
+#loop lampposts
+#   Print(@) 
+#end
+
+ClearText()
+Connect("hugin")
+Connect("Computer1")
+Connect("LongsonPlaystation")
+Slurp()
+
+void bruteAll()
+    array doors = GetThingsOfType("door")
+    var MC = Connect("Computer1")
+    loop doors
+        Print(@)
+
+        MC.Unlock(@)
+    end
+end
+
+    
+array dir()
+   array specialFunctions = []
+   Append(specialFunctions, "InteractWith(name, target)")
+   Append(specialFunctions, "GetAction(name)")
+   Append(specialFunctions, "GetAllRooms()")
+   Append(specialFunctions, "GetPeople()")
+   Append(specialFunctions, "GetPosition(name)")
+   Append(specialFunctions, "GetRoom(name)")
+   Append(specialFunctions, "GetThingsInRoom(roomName)")
+   Append(specialFunctions, "GetThingsOfType(type)")
+   Append(specialFunctions, "GetTypeOfThing(name)")
+   Append(specialFunctions, "SetPosition(name, targetThing)")
+   return specialFunctions
+end
+
+void slurpMain()
+    DisconnectAll()
+    Connect("Computer1")
+    Slurp()
+end
+
+void radioBroadcast(string msg)
+    DisconnectAll()
+    array radios = GetThingsOfType("radio")
+    array radioConns = []
+    loop radios
+        Append(radioConns, Connect(@))
+    end    
+    loop radioConns
+        @.Print(msg)
+    end
+    
+end
+
+void tvBroadcast(string msg)
+    DisconnectAll()
+    array tvs = GetThingsOfType("tv")
+    array tvConns = []
+    loop tvs
+       Append(tvConns, Connect(@))
+    end
+    loop tvConns
+       @.Print(msg) 
+    end
+end
+
+void fuseBoxBroadcast(string msg)
+    DisconnectAll()
+    array fuseBoxes = GetThingsOfType("fusebox")
+    array fuseBoxConns = []
+    loop fuseBoxes
+        Append(fuseBoxConns, Connect(@))
+    end
+    loop fuseBoxConns
+       @.Say(msg) 
+    end
+end
+
+void broadcast(string msg)
+   tvBroadcast(msg)
+   fuseBoxBroadcast(msg) 
+   radioBroadcast(msg)
+end
+
+loop
+    ClearText()
+    Print("MissingPersonFinder")
+    Print("===================")
+    var name = Input("Enter name: ")
+    Print(GetPosition(name))
+    Sleep(1)
+end
