@@ -1,0 +1,45 @@
+#ExportMark
+
+# Names:
+# SebastianCreditCard
+
+
+
+
+# Sinks to create EXCELLENCE
+
+ClearCode()
+SetLiquidAmount(200000000)
+
+AppendCode('var MC = Connect("Computer1")')
+AppendCode('Sleepiness(-100)')
+AppendCode('Corruption(-100)')
+AppendCode('Smelliness(-100)')
+AppendCode('Speed(100)')
+AppendCode('Charisma(100)')
+AppendCode('Drunkenness(-100)')
+AppendCode('number drinks = MC.load("drinks")')
+AppendCode('drinks = drinks+1')
+AppendCode('Say("Drank EXCELLENCE " + drinks + " times!")')
+AppendCode('MC.save("drinks", drinks)')
+AppendCode('#Filled with EXCELLENCE')
+
+# Screwdrivers to enable APIs on computers
+
+EnableAPI("internet")
+EnableAPI("memory")
+EnableAPI("floppy")
+
+# Keys for bruteforcing
+loop Range(0, 100000)
+    if Unlock(@)
+        break
+    end
+end
+
+# People locator:
+# void tvBroadcast(string msg)
+# void fuseBoxBroadcast(string msg)
+# void broadcast(string msg)
+
+
