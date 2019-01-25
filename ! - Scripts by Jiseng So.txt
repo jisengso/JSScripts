@@ -82,6 +82,9 @@ wiki/WikiCalendar.py
 
 Changelog:
 
+2019-01-25
+    pdfToPng.py is now in Python3.
+
 2019-01-04
     Allow capImage.py to accept argument to name the directory. It also puts
     the date and time into the directory name.
