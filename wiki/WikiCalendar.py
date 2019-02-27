@@ -144,11 +144,12 @@ class WikiCalendar:
         calendarList = calendar.monthcalendar(yearNum, monthNum)
         PH = self.placeHolder
         weekLists = []
+        blankDay = Day()
         for week in calendarList:
             weekList = []
             for day in week:
                 if day == 0:
-                    weekList.append(Day())
+                    weekList.append(blankDay)
                     continue
                 dayStr = f"{day:02}"
                 dayObj = ""
@@ -168,16 +169,17 @@ class WikiCalendar:
             calWeeks = (prevMonthLastWeek, nextMonthFirstWeek)
 
             for whichMonth, relWeek in enumerate(weeks):
-                for weekday, day in enumerate(calWeeks[whichMonth]):
-                    if day == 0:
-                        continue
-                    dayStr = f"{day:02}"
-                    dayObj = ""
-                    if self.doLinkDays or self.doDayClass:
-                        dayObj = Day(dayStr, self.doLinkDays, self.doDayClass, years[whichMonth], f"{months[whichMonth]}", "diffMon")
-                    else:
-                        dayObj = Day(dayStr)
-                    relWeek[weekday] = dayObj
+                if blankDay in relWeek:
+                    for weekday, day in enumerate(calWeeks[whichMonth]):
+                        if day == 0:
+                            continue
+                        dayStr = f"{day:02}"
+                        dayObj = ""
+                        if self.doLinkDays or self.doDayClass:
+                            dayObj = Day(dayStr, self.doLinkDays, self.doDayClass, years[whichMonth], f"{months[whichMonth]}", "diffMon")
+                        else:
+                            dayObj = Day(dayStr)
+                        relWeek[weekday] = dayObj
 
         return weekLists
 
