@@ -9,7 +9,7 @@ def execute(command):
     print("execute: " + command)
     process = Popen(command, shell=True)
     exitCode = process.wait()
-    exit()
+    return exitCode
 
 class Compressor:
     def __init__(self, dirName):
@@ -26,11 +26,13 @@ class Compressor:
 
     def run(self):
         with Pool(processes=self.compressProcessesMax) as thePool:
+            cmdList = []
             for file in self.fileList:
-                cmd = self.compressCommand.format(os.path.join(self.dirName, file))
-                thePool.apply_async(execute, (cmd,))
+                cmd = self.compressCommand.format(os.path.join(self.dirName,
+                file))
+                cmdList.append(cmd)
+            thePool.map(execute, cmdList)
             thePool.close()
-            thePool.join()
 
 if __name__ == "__main__":
     compressyThing = Compressor(sys.argv[1])
