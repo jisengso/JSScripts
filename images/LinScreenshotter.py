@@ -23,33 +23,42 @@ class LinScreenshotter:
         self.prefix = windowName
         self.fileSuffix = ".png"
         curDate = time.localtime()
-        self.dateStr = "".join([str(curDate.tm_year), str(curDate.tm_mon), str(curDate.tm_mday), str(curDate.tm_min), str(curDate.tm_min), str(curDate.tm_sec)])
-        self.dirName = "-".join([self.prefix, self.dateStr])
-        self.windowIDCommand = "xwininfo -root -tree | grep {}".format(windowName)
+        self.dateStr = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
+        self.dirName = f"{self.prefix}-{self.dateStr}"
+        self.tmpDir = "/dev/shm/"
+        self.windowIDCommand = f"xwininfo -root -tree | grep \"{windowName}\""
         self.windowID = ""
-        self.screenshotCommand = "import -window {} {}"
+        self.screenshotCommand = "import -window {} \"{}\""
         self.interval = 1
         self.exitNext = False
-        self.shouldCompressMore = True
-        self.shouldCompressNext = True
+        self.shouldCompressMore = False
+        self.shouldCompressNext = False
         self.compressProcessesMax = 6
-        self.compressPool = Pool(processes=self.compressProcessesMax)
-        self.compressCommand = "pngout {}"
+        self.compressPool = 0
+        if self.shouldCompressMore:
+            self.compressPool = Pool(processes=self.compressProcessesMax)
+        self.compressCommand = "pngout \"{}\""
         self.shouldDeduplicate = True
-        self.hashCommand = "shasum {}"
+        self.hashCommand = "shasum \"{}\""
         self.hashes = set()
+        self.exitPressed = 0
 
     def initDir(self):
         self.debug("initDir")
-        cmd = "mkdir {}".format(self.dirName)
+        cmd = "mkdir \"{}\"".format(self.dirName)
         process = Popen(cmd, shell=True)
         exitCode = process.wait()
 
     def setExit(self, bleh, blah):
         self.debug("setExit")
         self.exitNext = True
-        self.compressPool.close()
-        self.compressPool.join()
+        self.exitPressed += 1
+        if (self.exitPressed > 5):
+            exit()
+        if self.compressPool:
+            self.compressPool.close()
+            self.compressPool.join()
+
 
     def getID(self):
         self.debug("getID")
@@ -69,17 +78,20 @@ class LinScreenshotter:
                 time.sleep(self.interval)
             elif exitCode == 0 and theOutput:
                 break
+            if self.exitNext:
+                exit()
 
     def getScreenshot(self):
         self.debug("getScreenshot")
-        shotFilename = os.path.join(self.dirName, "".join([self.prefix, str(self.imageCount).zfill(self.digits), self.fileSuffix]))
-        cmd = self.screenshotCommand.format(self.windowID, shotFilename)
+        shotFilename = f"{self.prefix}-{str(self.imageCount).zfill(self.digits)}{self.fileSuffix}"
+        tmpLocation = os.path.join(self.tmpDir, shotFilename)
+        cmd = self.screenshotCommand.format(self.windowID, tmpLocation)
         self.debug(cmd)
         process = Popen(cmd, shell=True)
         exitCode = process.wait()
         if not exitCode:
             if self.shouldDeduplicate:
-                self.deduplicate(shotFilename)
+                self.deduplicate(shotFilename, tmpLocation)
             else:
                 self.imageCount += 1
             if self.shouldCompressMore and self.shouldCompressNext:
@@ -94,9 +106,9 @@ class LinScreenshotter:
         compressCmd = self.compressCommand.format(shotFilename)
         result = self.compressPool.apply_async(execute, (compressCmd,))
 
-    def deduplicate(self, shotFilename):
+    def deduplicate(self, shotFilename, tmpLocation):
         self.debug("deduplicate")
-        hashCmd = self.hashCommand.format(shotFilename)
+        hashCmd = self.hashCommand.format(tmpLocation)
         process = Popen(hashCmd, stdout=PIPE, shell=True)
         newHash = process.communicate()[0].split()[0]
         exitCode = process.wait()
@@ -105,6 +117,10 @@ class LinScreenshotter:
             self.imageCount += 1
             self.hashes.add(newHash)
             self.shouldCompressNext = True
+            mvCmd = f"mv \"{tmpLocation}\" \"{self.dirName}\""
+            self.debug(mvCmd)
+            process = Popen(mvCmd, stdout=PIPE, shell=True)
+            exitCode = process.wait()
         else:
             self.shouldCompressNext = False
 
@@ -119,8 +135,12 @@ class LinScreenshotter:
                 self.getID()
                 self.getScreenshot()
             except:
-                self.debug("Error occurred.")
+                if self.exitNext:
+                    self.debug("Set to exit.")
+                else:
+                    self.debug("Error occurred.")
                 time.sleep(self.interval)
+
             if self.exitNext:
                 exit()
 
