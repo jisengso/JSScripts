@@ -58,12 +58,12 @@ def signal_handler(signalNum, frame):
 	exitNext = 200
 
 def childSigHandler(signalNum, frame):
-	print (time.ctime() + ": Child received termination signal received: " + signalNum.__str__() + ", " + frame.__str__())
+	print (time.ctime() + ": Child received termination signal: " + signalNum.__str__() + ", " + frame.__str__())
 	global exitNext
 	exitNext = 200
 
 def saveImage(*args, **kwds):
-	signal.signal(signal.SIGINT, childSigHandler)
+	signal.signal(signal.SIGINT, signal.SIG_IGN)
 	imageFromPIL, saveFileName = args
 	print (time.ctime() + ": Saving " + saveFileName)
 	imageFromPIL.save(saveFileName, "PNG", optimize=False, compress_level=1)
@@ -161,7 +161,8 @@ if __name__ == "__main__":
 			print("Invalid deduplication method. ")
 			break
 
-
+	savingPool.close()
+	time.sleep(1)
 	savingPool.join()
 	print (time.ctime() + ": Exiting.")
 	exit(0)
