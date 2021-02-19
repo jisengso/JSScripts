@@ -10,7 +10,8 @@ import os
 import time
 from subprocess import Popen, PIPE
 
-compressionCommandBase = "ffmpeg -i {} -c:a flac -compression_level 12 -c:v libvpx-vp9 -strict experimental -lossless 1 -threads 6 -frame-parallel 1 -row-mt 1 -tile-columns 2 -metadata {} {}"
+compressionCommandBase = "ffmpeg -i {} {} -metadata {} {}"
+ffmpegCompressionSettings = "-c:a flac -compression_level 12 -c:v libvpx-vp9 -strict experimental -lossless 1 -threads 6 -frame-parallel 1 -row-mt 1 -tile-columns 2"
 queryCommandBase = "mkvinfo {}"
 metadataMarker = "COMPRESSED=VP9FLAC"
 compressionPostfix = "VP9FLAC"
@@ -36,11 +37,11 @@ for eachFile in filesToCompress:
         messages.append(f"{inputFile} skipped: Bad name.")
         continue
     baseName, extension = splittedName
-    outputName = f"\"{baseName} {compressionPostfix}.mkv\""
+    outputName = f"\"{baseName}.{compressionPostfix}.mkv\""
     if outputName.replace("\"", "") in fileList:
         messages.append(f"{inputFile} skipped: Output file exists.")
         continue
-    compressionCommand = compressionCommandBase.format(inputFile, metadataMarker, outputName)
+    compressionCommand = compressionCommandBase.format(inputFile, ffmpegCompressionSettings, metadataMarker, outputName)
     startTime = time.time()
     process = Popen(compressionCommand, shell=True)
     exitCode = process.wait()

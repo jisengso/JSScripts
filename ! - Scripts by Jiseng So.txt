@@ -32,6 +32,9 @@ network/ipSwitcher.py
 network/vpnRandomizer.py
 	Randomizes the selected VPN connection. Takes a list of files "selectionList.txt" and makes a symlink to one of those files in "selectedVPN.conf". Meant to be used with an autostarting OpenVPN service.
 
+videos/audioDedup.py
+    Deduplicates consecutive video frames and synchronizes audio. Video needs to be lossless. Dependent on ffmpeg, mpv, mkvmerge, python3.
+
 videos/bmpHandler.py
 	Decodes and encodes BMPs. Only handles 24-bit without colorspace information. Used by stringMaker
 
@@ -81,6 +84,9 @@ wiki/WikiCalendar.py
     Makes a wikitext calendar with a given year and month.
 
 Changelog:
+
+2021-02-19
+    Add audioDedup.py, which synchronizes audio to consecutively deduplicated video frames.
 
 2019-01-25
     pdfToPng.py is now in Python3.
