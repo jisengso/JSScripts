@@ -1,9 +1,31 @@
 #!/usr/bin/env python3
+"""
+Usage:
+audioDedup.py {videoFile}
 
+Handles deduplication of consecutive video frames and synchronizes the audio.
+
+Dependencies:
+- mpv
+- ffmpeg
+- mkvmerge
+- Linux
+- Enough free RAM for entire PCM portion
+- Video must be lossless
+
+Features to add:
+- Better error checking
+- Configurable output filename
+- Configurable temporary working directory
+- Synchronization for fps and samplerate not divisable by 60
+- Extraction of fps from ffmpeg info
+- More intelligent extension changing
+"""
 import sys
 import os
 import struct
 import subprocess
+import tempfile
 
 def debug(value, *args, **kwargs):
     print(value, *args, **kwargs)
@@ -69,7 +91,7 @@ class Deduper:
     def __init__(self, videoToDedupFilename):
         self.filename = videoToDedupFilename
         self.dedupedFilename = self.filename[:-4] + ".DEDUP.avi"
-        self.infoFilename = self.filename + ".info"
+        self.infoTmpFile = tempfile.TemporaryFile()
         self.extractPath = ""
         self.dedupedAudioPath = ""
         self.outputFilename = ""
@@ -77,21 +99,21 @@ class Deduper:
         self.audioSlices = [] # Video frame numbers with desired audio slice.
 
     def dedupVideo(self):
-        dedupCommand = f"ffmpeg -y -i '{self.filename}' -an -vf mpdecimate,showinfo,\"setpts=N\" -c:v ffv1 '{self.dedupedFilename}' 2> '{self.infoFilename}'"
+        dedupCommand = f"ffmpeg -y -i '{self.filename}' -an -vf mpdecimate,showinfo,\"setpts=N\" -c:v ffv1 '{self.dedupedFilename}'"
         debug(dedupCommand)
-        subprocess.call(dedupCommand, shell=True)
+        subprocess.run(dedupCommand, shell=True, stderr=self.infoTmpFile)
+        self.infoTmpFile.seek(0)
 
     def extractAudio(self, extractPath="/dev/shm/dedupTmp.wav"):
         self.extractPath = extractPath
         extractCommand = f"mpv '{self.filename}' -o='{extractPath}' --no-video"
         debug(extractCommand)
-        subprocess.call(extractCommand, shell=True)
+        subprocess.run(extractCommand, shell=True)
         # May want to detect error here.
     
     def loadFfmpegInfo(self):
-        filename = self.infoFilename
-        debug(f"Loading {self.infoFilename}")
-        infoFile = open(filename, "rb")
+        debug("Parsing ffmpeg info.")
+        infoFile = self.infoTmpFile
 
         line = infoFile.readline()
 
@@ -154,11 +176,10 @@ class Deduper:
             self.outputFilename = outputFilename
         muxCommand = f"mkvmerge -o {self.outputFilename} {self.dedupedFilename} {self.dedupedAudioPath}"
         debug(muxCommand)
-        subprocess.call(muxCommand, shell=True)
+        subprocess.run(muxCommand, shell=True)
 
     def deleteTmpFiles(self):
         os.unlink(self.dedupedFilename)
-        os.unlink(self.infoFilename)
         os.unlink(self.extractPath)
         os.unlink(self.dedupedAudioPath)
 
