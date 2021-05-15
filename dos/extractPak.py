@@ -16,11 +16,12 @@ def readHeader(archiveContents):
     while keepSlicing:
 
         curSegment = archiveContents[sliceBegin:sliceEnd]
+        print(curSegment)
         nullIndex = curSegment.index(b"\x00", 4)
         strLen = nullIndex - 4
         segmentFormat = "<I" + f"{(strLen+1)}s" + "I"
         fileStart, fileName, fileEnd = struct.unpack_from(segmentFormat, curSegment)
-        if fileName[0] == 0:
+        if fileName[0] == 0 or fileStart == 0:
             keepSlicing = False
             break
         fileInfo = (fileStart, fileEnd, fileName)
