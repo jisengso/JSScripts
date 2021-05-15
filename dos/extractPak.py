@@ -10,19 +10,24 @@ def readHeader(archiveContents):
     fileIndices = []
 
     sliceBegin = 0
-    sliceEnd = 20
+    sliceEnd = 24
     segmentFormat = "<I12sI"
     keepSlicing = True
     while keepSlicing:
+
         curSegment = archiveContents[sliceBegin:sliceEnd]
-        fileStart, fileName, fileEnd = struct.unpack(segmentFormat, curSegment)
+        nullIndex = curSegment.index(b"\x00", 4)
+        strLen = nullIndex - 4
+        segmentFormat = "<I" + f"{(strLen+1)}s" + "I"
+        fileStart, fileName, fileEnd = struct.unpack_from(segmentFormat, curSegment)
         if fileName[0] == 0:
             keepSlicing = False
             break
         fileInfo = (fileStart, fileEnd, fileName)
         fileIndices.append(fileInfo)
-        sliceBegin += 16
-        sliceEnd += 16
+        offsetReduction = 16 - nullIndex -1
+        sliceBegin += 16 - offsetReduction
+        sliceEnd = sliceBegin + 24 
     return fileIndices
 
 def extractFile(archiveContents, fileInfo):
@@ -30,7 +35,6 @@ def extractFile(archiveContents, fileInfo):
     sliceEnd = fileInfo[1]
     fileName = fileInfo[2].replace(b"\x00", b"").decode("utf-8")
     exportFolder = "."
-    print(f"{sliceBegin}, {sliceEnd}, {fileName}")
     writeContents = archiveContents[sliceBegin:sliceEnd]
     openPath = f"{exportFolder}/{fileName}"
     with open(openPath, "wb") as outFile:
@@ -40,6 +44,7 @@ def extractFile(archiveContents, fileInfo):
 def main():
     PAKFile = sys.argv[1]
     archiveContents = ""
+    print(f"Opening {PAKFile}.", file=sys.stderr)
     with open(PAKFile, "rb") as theFile:
         archiveContents = theFile.read()
     
