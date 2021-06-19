@@ -22,6 +22,8 @@ For each subsong, have a default limit of 10 seconds to dump wav. adplay doesn't
 Call upon sox to determine if the dumped wav was music and clip trailing silence.
 """)
     parser.add_argument("-d", type=str, default="./", metavar="outDir", help="output directory (default: ./)")
+    parser.add_argument("-u", type=int, default=0, metavar="subsongUpperBound", help="Max subsong number. (default: none)")
+    parser.add_argument("-l", type=int, default=0, metavar="subsongLowerBound", help="Min subsong number. (default: none)")
     parser.add_argument("inputFiles", nargs="+", help="Files to convert (required)")
     args = parser.parse_args()
     return args
@@ -51,7 +53,7 @@ def dumpSong(inputFile, subsongNum, outDir):
     aJunkFile = tempfile.TemporaryFile()
     playerProcess = subprocess.Popen(dumpCommand, shell=True, stderr=aJunkFile, stdout=aJunkFile)    
     try:
-        playerProcess.wait(5)
+        playerProcess.wait(10)
     except subprocess.TimeoutExpired:
         playerProcess.terminate()
     aJunkFile.close()
@@ -72,9 +74,13 @@ def dumpSong(inputFile, subsongNum, outDir):
 
     
 
-def dumpSongs(inputFile, outDir):
+def dumpSongs(inputFile, outDir, args):
     subsongs = getSubsongsNum(inputFile)
-    for subsongNum in range(subsongs):
+    minSubsongs = args.l
+    maxSubsongs = subsongs
+    if args.u:
+        maxSubsongs = args.u
+    for subsongNum in range(minSubsongs, maxSubsongs):
         gotSong = dumpSong(inputFile, subsongNum, outDir)
 
 
@@ -84,7 +90,7 @@ def main():
     outDir = args.d
     inputFiles = args.inputFiles
     for eachFile in inputFiles:
-        dumpSongs(eachFile, outDir)
+        dumpSongs(eachFile, outDir, args)
 
 if __name__ == "__main__":
     main()
