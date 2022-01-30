@@ -11,7 +11,7 @@ import time
 from subprocess import Popen, PIPE
 
 compressionCommandBase = "ffmpeg -i {} {} -metadata {} {}"
-ffmpegCompressionSettings = "-c:a flac -compression_level 12 -c:v libvpx-vp9 -strict experimental -lossless 1 -threads 6 -frame-parallel 1 -row-mt 1 -tile-columns 2"
+ffmpegCompressionSettings = "-c:a flac -compression_level 12 -deadline best -c:v libvpx-vp9 -strict experimental -lossless 1 -threads 6 -frame-parallel 1 -row-mt 1 -tile-columns 2"
 queryCommandBase = "mkvinfo {}"
 metadataMarker = "COMPRESSED=VP9FLAC"
 compressionPostfix = "VP9FLAC"
