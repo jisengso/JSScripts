@@ -5,9 +5,16 @@ By default, this program will capture the contents of the primary screen in PNG,
 
 A few deduplication methods are available. By default, the program will not save the exact same image twice in the same session.
 
+For Windows only.
+
+Usage: python3 capImage.py [{name}]
+
 Example use cases:
 	Screenshots of games
 	Demonstration of how to perform an action
+
+Dependencies:
+* Python Imaging Library
 
 '''
 
@@ -52,6 +59,7 @@ except:
 
 def dupImage():
 	print (time.ctime() + ": Duplicate image detected. Not saving this one.")
+
 def signal_handler(signalNum, frame):
 	print (time.ctime() + ": Termination signal received: " + signalNum.__str__() + ", " + frame.__str__())
 	global exitNext
