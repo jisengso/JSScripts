@@ -23,8 +23,11 @@ class LinScreenshotter:
         self.prefix = windowName
         self.fileSuffix = ".png"
         curDate = time.localtime()
-        self.dateStr = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
+        self.dateStamp = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}"
+        self.dateStr = f"{self.dateStamp}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
         self.dirName = f"{self.prefix}-{self.dateStr}"
+        username = os.getlogin()
+        self.username = username.replace(" ", "_")
         self.tmpDir = "/dev/shm/"
         self.windowIDCommand = f"xwininfo -root -tree | grep \"{windowName}\""
         self.windowID = ""
@@ -83,7 +86,7 @@ class LinScreenshotter:
 
     def getScreenshot(self):
         self.debug("getScreenshot")
-        shotFilename = f"{self.prefix}-{str(self.imageCount).zfill(self.digits)}{self.fileSuffix}"
+        shotFilename = f"{self.dateStamp}_{self.prefix}_{self.username}_{str(self.imageCount).zfill(self.digits)}{self.fileSuffix}"
         tmpLocation = os.path.join(self.tmpDir, shotFilename)
         cmd = self.screenshotCommand.format(self.windowID, tmpLocation)
         self.debug(cmd)

@@ -5,16 +5,9 @@ By default, this program will capture the contents of the primary screen in PNG,
 
 A few deduplication methods are available. By default, the program will not save the exact same image twice in the same session.
 
-For Windows only.
-
-Usage: python3 capImage.py [{name}]
-
 Example use cases:
 	Screenshots of games
 	Demonstration of how to perform an action
-
-Dependencies:
-* Python Imaging Library
 
 '''
 
@@ -59,7 +52,6 @@ except:
 
 def dupImage():
 	print (time.ctime() + ": Duplicate image detected. Not saving this one.")
-
 def signal_handler(signalNum, frame):
 	print (time.ctime() + ": Termination signal received: " + signalNum.__str__() + ", " + frame.__str__())
 	global exitNext
@@ -92,8 +84,11 @@ if __name__ == "__main__":
 		filePrefix = sys.argv[1]
 
 	curDate = time.localtime()
-	dateStr = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
+	dateStamp = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}"
+	dateStr = f"{dateStamp}-{curDate.tm_hour:02}{curDate.tm_min:02}{curDate.tm_sec:02}"
 	dirName = f"{filePrefix}-{dateStr}"
+	username = os.getlogin()
+	username = username.replace(" ", "_")
 
 	# dedupMethod 0: Consecutive deduplication. Does not save consecutive exact same images.
 	# dedupMethod 1: Session deduplication. Never save exact same image in same session.
@@ -144,7 +139,7 @@ if __name__ == "__main__":
 			curImage = -404
 			curImageHash = -404
 
-		filename = os.path.join(captureDir, f"{filePrefix}_{counter:010}.png")
+		filename = os.path.join(captureDir, f"{dateStamp}_{filePrefix}_{username}_{counter:010}.png")
 		saveImageArgs = (curImage, filename)
 
 		if curImage == -404:
