@@ -28,4 +28,6 @@ if [ $DOCONVERSION ]; then
         dcraw -c -w $dngfile | pnmtopng > $OUTFILE
         exiftool -overwrite_original_in_place -ee -U -F -tagsFromFile $dngfile $OUTFILE 
     done
+    mkdir -p dngFiles
+    mv *.dng dngFiles
 fi
