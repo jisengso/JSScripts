@@ -60,7 +60,7 @@ basedatetime = datetimeList[0]
 print(basedatetime[0], "00:00:00")
 
 
-for eachTime in datetimeList[1:-1]:
+for eachTime in datetimeList[1:]:
     difference = eachTime[1] - basedatetime[1]
     formattedDifference = secondsToTime(difference.seconds)
     print(eachTime[0], formattedDifference)
