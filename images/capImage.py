@@ -21,7 +21,6 @@ import multiprocessing
 from multiprocessing import Pool
 import time
 import os
-import random
 import stat
 import signal
 import sys
@@ -79,11 +78,9 @@ if __name__ == "__main__":
 	# There used to be two capture methods.
 	captureMethod = 0
 
-	sessionRand = random.randint(1000, 10000)
-
-	filePrefix = f"capture_{sessionRand}"
+	filePrefix = f"capture"
 	if len(sys.argv) > 1:
-		filePrefix = f"{sys.argv[1]}_{sessionRand}"
+		filePrefix = sys.argv[1]
 
 	curDate = time.localtime()
 	dateStamp = f"{curDate.tm_year:04}{curDate.tm_mon:02}{curDate.tm_mday:02}"
@@ -141,7 +138,7 @@ if __name__ == "__main__":
 			curImage = -404
 			curImageHash = -404
 
-		filename = os.path.join(captureDir, f"{dateStamp}_{filePrefix}_{username}_{counter:010}.png")
+		filename = os.path.join(captureDir, f"{dateStr}_{filePrefix}_{username}_{counter:010}.png")
 		saveImageArgs = (curImage, filename)
 
 		if curImage == -404:
