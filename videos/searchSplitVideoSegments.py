@@ -42,6 +42,7 @@ Rabbits eat hay!
 import getopt
 import os
 import sys
+import string
 from subprocess import Popen, PIPE
 from multiprocessing import Pool
 
@@ -59,7 +60,20 @@ class Splitter:
         self.parallelProcesses = numProcesses
         self.dummyRun = dummyRun
         self.clipTimesList = []
-        self.commandTemplate = "ffmpeg -i \"{videoFile}\" -ss {startTime} -to {endTime} -c:v copy -c:a copy \"{outputFile}\""
+        self.commandTemplate = "ffmpeg -i \"{videoFile}\" -ss {startTime} -to {endTime} -c:v copy -c:a copy -n \"{outputFile}\""
+
+    def sanitize(self, dirtyPhrase):
+        acceptableChars = string.ascii_letters + string.digits + "_"
+        dirtyChars = list(set(dirtyPhrase))
+        newPhrase = dirtyPhrase
+
+        for char in dirtyChars:
+            if char not in acceptableChars:
+                if char in string.whitespace:
+                    newPhrase = newPhrase.replace(char, "_")
+                else:
+                    newPhrase = newPhrase.replace(char, "")
+        return newPhrase
 
     def search(self):
         allLines = []
@@ -87,7 +101,10 @@ class Splitter:
             startTime = startTime.replace(",", ".")
             endTime = endTime.replace(",", ".")
 
-            outFile = f"{outputDir}/{entry[1].replace(' ', '_')}.mkv"
+            timePrefix = startTime[:9].replace(":", "")
+            phrase = entry[1]
+            phrase = self.sanitize(phrase)
+            outFile = f"{outputDir}/{timePrefix}_{phrase}.mkv"
 
             commandString = self.commandTemplate.format(videoFile=self.videoFilename, startTime=startTime, endTime=endTime, outputFile=outFile)
             commands.append(commandString)
