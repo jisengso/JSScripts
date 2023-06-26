@@ -199,9 +199,10 @@ class WikiCalendar:
         outputList = []
         for week in weekLists:
             for day in week:
-                holidayItem = day.holidayItem()
-                if holidayItem:
-                    self.holidayList.append(holidayItem)
+                if int(day.month) == self.monthNum:
+                    holidayItem = day.holidayItem()
+                    if holidayItem:
+                        self.holidayList.append(holidayItem)
 
         if self.holidayList:
             outputList.append("|-")
