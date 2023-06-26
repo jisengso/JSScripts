@@ -222,6 +222,9 @@ class WikiCalendar:
             flatList.append(weekStr)
         return flatList
 
+    def makeCategoryTag(self):
+        monthCategory = f"\n\n<noinclude>\n[[Category:{self.yearStr}{self.monthStr}]]\n</noinclude>"
+        return monthCategory
 
     def makeIt(self):
 
@@ -232,6 +235,7 @@ class WikiCalendar:
         weekLists = self.makeWeekLists()
         holidayList = self.makeHolidayList(weekLists)
         flatWeekList = self.flattenWeekLists(weekLists)
+        monthCategoryTag = self.makeCategoryTag()
 
         print(title)
         for line in adjMonths:
@@ -242,6 +246,7 @@ class WikiCalendar:
         for line in holidayList:
             print(line)
         print("|}")
+        print(monthCategoryTag)
 
 
 if __name__ == "__main__":
