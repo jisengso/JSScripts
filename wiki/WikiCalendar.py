@@ -77,7 +77,7 @@ class WikiCalendar:
         self.monthNum = int(sys.argv[2])
         self.monthStr = f"{self.monthNum:02}"
         self.holidayList = []
-        self.calendarClass = "\"wikitable floatright\""
+        self.calendarClass = "\"wikitable floatright calendar\""
         self.placeHolder = "{}"
         self.doLinkTitle = True
         self.doLinkDays = True
